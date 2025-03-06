@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Roblox</title>
+
+    <style>
+        input {
+            width: 100%;
+            height: 100%;
+            font-size: 75px;
+            text-align: center;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            width: auto;
+            height: 100%;
+            font-size: 40px;
+            background-color: #000;
+            border: 2px solid white;
+            color: #fff;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            padding: 20px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        iframe {
+            display: block;
+            margin: 0 auto;
+            margin-top: 20px;
+            width: 100%;
+            height: 100%;
+        }
+        .videoWrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            padding-top: 25px;
+            height: 0;
+        }
+
+        .videoWrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 50%;
+            display: block;
+            margin: 0 auto;
+            justify-content: center;
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <input placeholder="Yehuda's Secret Code Here">
+    
+    <button id="reloadButton" onclick="reloadVideo()">Reload</button>
+    <div class="videoWrapper">
+        <iframe id="videoFrame" src="https:///www.youtube.com/embed/WU9AtTbcR_M?autoplay=1&amp;feature=oembed&amp;wmode=opaque" frameborder="0" allowfullscreen=""></iframe>
+    </div>
+    <script>
+        const input = document.querySelector('input');
+        const iframe = document.getElementById('videoFrame');
+        const button = document.getElementById('reloadButton');
+        function reloadVideo() {
+            const videoId = input.value.trim();
+            iframe.src = `https://www.youtube.com/embed/${videoId}?si=2Q-T8qDP2gMOiU1m`;
+        }
+    </script>
+</body>
+</html>
