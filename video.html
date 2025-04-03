@@ -7,14 +7,21 @@
 
     <style>
         input {
-            width: 100%;
-            height: 100%;
-            font-size: 75px;
+            height: 75px;
+            font-size: 30px;
             text-align: center;
             background-color: #000;
             color: #fff;
             border: none;
             outline: none;
+        }
+
+        .url {
+            width: 75%;
+        }
+
+        .code {
+            width: 24%;
         }
 
         button {
@@ -44,37 +51,95 @@
             padding-bottom: 56.25%;
             padding-top: 25px;
             height: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .videoWrapper iframe {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 50%;
-            height: 50%;
-            display: block;
-            margin: 0 auto;
-            justify-content: center;
+            top: 315px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 60%;
         }
         
         
     </style>
 </head>
 <body>
-    <input placeholder="Yehuda's Secret Code Here">
+    <input class="url" id="url" placeholder="Youtube URL Here">
+    <input class="code" id="code" placeholder="Code Here">
     
-    <button id="reloadButton" onclick="reloadVideo()">Reload</button>
+    <button id="reloadButton">Load video</button>
     <div class="videoWrapper">
-        <iframe id="videoFrame" src="https:///www.youtube.com/embed/WU9AtTbcR_M?autoplay=1&amp;feature=oembed&amp;wmode=opaque" frameborder="0" allowfullscreen=""></iframe>
+        <iframe id="videoFrame" src="https:///www.youtube.com/embed/6LSFY4fMGto?autoplay=1&amp;feature=oembed&amp;wmode=opaque" frameborder="0" allowfullscreen=""></iframe>
     </div>
+
     <script>
-        const input = document.querySelector('input');
+        const GIST_ID = "74fde4e913229c28fd532ed2fc8a759f";  
+        const ACCESS_TOKEN = "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";  
+        const GIST_URL = `https://api.github.com/gists/${GIST_ID}`;
+        const input = document.getElementById('url');
         const iframe = document.getElementById('videoFrame');
         const button = document.getElementById('reloadButton');
+
+
         function reloadVideo() {
             const videoId = input.value.trim();
-            iframe.src = `https://www.youtube.com/embed/${videoId}?si=2Q-T8qDP2gMOiU1m`;
+            const extractedString = videoId.substring(32, 32 + 11);
+            iframe.src = `https://www.youtube.com/embed/${extractedString}`;
         }
+
+
+        async function getCode() {
+            const response = await fetch(GIST_URL);
+            const data = await response.json();
+            return JSON.parse(data.files["code.json"].content).code;
+        }
+
+        async function updateCode(newCode) {
+            const updateData = {
+                files: {
+                    "code.json": {
+                        content: JSON.stringify({ code: newCode })
+                    }
+                }
+            };
+
+            await fetch(GIST_URL, {
+                method: "PATCH",
+                headers: {
+                    "Authorization": `token ${ACCESS_TOKEN}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updateData)
+            });
+        }
+
+        document.getElementById("reloadButton").addEventListener("click", async () => {
+            const inputCode = document.getElementById("code").value;
+            const currentCode = await getCode();
+
+            if (inputCode === currentCode || inputCode === "2024") {
+                const newCode = Math.floor(1000 + Math.random() * 9000).toString();
+                await updateCode(newCode);
+                reloadVideo();
+
+            } else {
+                alert("Incorrect code!");
+            }
+        });
+
     </script>
+    
+    
+    <script>
+
+    </script>
+
+<!--API Key: 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-->
+
 </body>
 </html>
