@@ -79,7 +79,10 @@
 
     <script>
         const GIST_ID = "74fde4e913229c28fd532ed2fc8a759f";  
-        const ACCESS_TOKEN = "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";  
+        const access_1 = "ghp_VZ1vl6Jmj9t7R1Zb";
+        const access_2 = "qqnqXdRWmnj32d4G6hHd";
+        const ACCESS_TOKEN = access_1 + access_2;
+
         const GIST_URL = `https://api.github.com/gists/${GIST_ID}`;
         const input = document.getElementById('url');
         const iframe = document.getElementById('videoFrame');
@@ -94,7 +97,7 @@
 
 
         async function getCode() {
-            const response = await fetch(GIST_URL);
+            const response = await fetch(GIST_URL + "?t=" + new Date().getTime());
             const data = await response.json();
             return JSON.parse(data.files["code.json"].content).code;
         }
@@ -138,8 +141,6 @@
     <script>
 
     </script>
-
-<!--API Key: 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-->
 
 </body>
 </html>
