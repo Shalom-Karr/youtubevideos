@@ -74,7 +74,6 @@
             right: 0;
             width: 60px;
             height: 60px;
-            background-color: rgba(0, 0, 0, 0.5);
             display: flex;
         }
         
@@ -121,6 +120,8 @@
             setTimeout(() => {
                 codeViewer.style.display = "none";
             }, 5000);
+            } else {
+            console.log("wrong comp");
             }
         });
 
@@ -133,6 +134,8 @@
                 setTimeout(() => {
                 codeViewer.style.display = "none";
                 }, 5000);
+            } else {
+                console.log("wrong comp");
             }
             event.preventDefault(); // Prevent default browser behavior for Ctrl+W
             }
@@ -209,6 +212,5 @@
     <script>
 
     </script>
-
 </body>
 </html>
