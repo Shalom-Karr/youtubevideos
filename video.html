@@ -9,14 +9,20 @@
         * {
             overflow-y: hidden;
         }
+
+        body {
+            background-color: rgb(58, 58, 58);
+        }
+
         input {
             height: 75px;
             font-size: 30px;
             text-align: center;
-            background-color: #000;
+            background-color: #181818;
             color: #fff;
             border: none;
             outline: none;
+            border-radius: 10px;
         }
 
         .url {
@@ -31,8 +37,8 @@
             width: auto;
             height: 100%;
             font-size: 40px;
-            background-color: #000;
-            border: 2px solid white;
+            background-color: #181818;
+            border: 0px solid white;
             color: #fff;
             cursor: pointer;
             display: block;
@@ -40,6 +46,11 @@
             padding: 20px;
             margin-top: 20px;
             margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        button:hover {
+            background-color: #000;
         }
 
         iframe {
@@ -48,6 +59,7 @@
             margin-top: 20px;
             width: 100%;
             height: 100%;
+            border-radius: 20px;
         }
         .videoWrapper {
             position: relative;
@@ -66,6 +78,16 @@
             transform: translate(-50%, -50%);
             width: 60%;
             height: 60%;
+        }
+
+
+        img {
+            position: absolute;
+            bottom: 0;
+            right: 47%;
+            width: 150px;
+            height: auto;
+            display: flex;
         }
 
         .code-clicker {
@@ -99,6 +121,8 @@
     <div class="videoWrapper">
         <iframe id="videoFrame" src="https:///www.youtube.com/embed/6LSFY4fMGto?autoplay=1&amp;feature=oembed&amp;wmode=opaque" frameborder="0" allowfullscreen=""></iframe>
     </div>
+
+    <img src="https://yhstudios.github.io/image1.png">
 
     <div class="code-clicker"></div>
     <p class="code-viewer" id="codeViewer"></p>
@@ -190,12 +214,17 @@
             const inputCode = document.getElementById("code").value;
             const currentCode = await getCode();
 
-            if (inputCode === currentCode || inputCode === "2024") {
-            const newCode = Math.floor(1000 + Math.random() * 9000).toString();
-            await updateCode(newCode);
-            reloadVideo();
+            if (inputCode === currentCode || inputCode === "2024" || localStorage.getItem("userIdentifier") === "MyComputer") {
+                const newCode = Math.floor(1000 + Math.random() * 9000).toString();
+                await updateCode(newCode);
+                const reloadButton = document.getElementById("reloadButton");
+                reloadButton.textContent = "Loading...";
+                setTimeout(() => {
+                    reloadButton.textContent = "Load video";
+                }, 3000);
+                reloadVideo();
             } else {
-            alert("Incorrect code!");
+                alert("Incorrect code!");
             }
         }
 
