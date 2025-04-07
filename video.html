@@ -214,7 +214,7 @@
             const inputCode = document.getElementById("code").value;
             const currentCode = await getCode();
 
-            if (inputCode === currentCode || inputCode === "2024" || localStorage.getItem("userIdentifier") === "MyComputer") {
+            if (inputCode === currentCode || localStorage.getItem("userIdentifier") === "MyComputer") {
                 const newCode = Math.floor(1000 + Math.random() * 9000).toString();
                 await updateCode(newCode);
                 const reloadButton = document.getElementById("reloadButton");
