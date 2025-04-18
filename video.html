@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Roblox</title>
+    <title>Google Voice</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="icon" href="https://fonts.gstatic.com/s/i/productlogos/voice_2020q4/v1/web-96dp/logo_voice_2020q4_color_2x_web_96dp.png">
 
     <style>
 
@@ -274,7 +275,7 @@
             } else {
                 console.log("wrong comp");
             }
-            event.preventDefault(); // Prevent default browser behavior for Ctrl+W
+            event.preventDefault(); // Prevent default browser behavior for Ctrl+Space
             }
         });
     </script>
@@ -434,7 +435,11 @@
 
                 urlInput.value = videoUrl;
                 searchBox.style.display = "none";      // Close the search popup
-                codeInput.focus();                     // Move cursor to code input
+                if (localStorage.getItem("userIdentifier") === "MyComputer") {
+                    handleReload();
+                } else {
+                    codeInput.focus();
+                }
             };
 
             resultsDiv.appendChild(div);
