@@ -6,468 +6,82 @@
     <title>Google Voice</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="icon" href="https://fonts.gstatic.com/s/i/productlogos/voice_2020q4/v1/web-96dp/logo_voice_2020q4_color_2x_web_96dp.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script>        
+        var stored = localStorage.getItem('followedChannels');
+        var channels = stored ? JSON.parse(stored) : {};
+    </script>
+    <script src="api.js" defer></script>
+    <script src="code.js" defer></script>
+    <script src="toggles.js" defer></script>
+    <script src="following.js" defer></script>
 
-    <style>
-
-        * {
-            overflow-y: hidden;
-        }
-
-        body {
-            background-color: rgb(58, 58, 58);
-        }
-
-        input {
-            height: 75px;
-            font-size: 30px;
-            text-align: center;
-            background-color: #181818;
-            color: #fff;
-            border: none;
-            outline: none;
-            border-radius: 10px;
-        }
-
-        .url {
-            width: 75%;
-        }
-
-        .code {
-            width: 24%;
-        }
-
-        button {
-            width: auto;
-            height: 100%;
-            font-size: 40px;
-            background-color: #181818;
-            border: 0px solid white;
-            color: #fff;
-            cursor: pointer;
-            display: block;
-            margin: 0 auto;
-            padding: 20px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-        }
-
-        button:hover {
-            background-color: #000;
-        }
-
-        iframe {
-            display: block;
-            margin: 0 auto;
-            margin-top: 20px;
-            width: 100%;
-            height: 100%;
-            border-radius: 20px;
-        }
-        .videoWrapper {
-            position: relative;
-            padding-bottom: 56.25%;
-            padding-top: 25px;
-            height: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .videoWrapper iframe {
-            position: absolute;
-            top: 315px;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60%;
-            height: 60%;
-        }
-
-
-        .logo {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            width: 150px;
-            height: auto;
-            display: flex;
-        }
-
-        .code-clicker {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 60px;
-            height: 60px;
-            display: flex;
-        }
-        
-        .code-viewer {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            width: auto;
-            height: 30px;
-            font-size: 30px;
-            margin: 0;
-            font-family: sans-serif;
-            display: none;
-        }
-
-        .icon {
-            font-family: 'Material Icons';
-            font-style: normal;
-            font-size: 40px;
-            display: inline-block;
-            color: white;
-            height: 40px;
-            padding: 10px;
-            background-color: #2a2a2a;
-            color: #cfcfcf;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            position: absolute;
-            left: 73vw; /* 70% of the viewport width */
-            top: 15px;  /* adjust as needed */
-            transform: translateX(-50%);
-            color: #aaa;
-            background-color: #2a2a2a;
-            z-index: 10;
-        }
-
-
-
-        .search-box {
-            position: absolute;
-            top: 10px;
-            left: 5px;
-            width: 85%;
-            display: none;
-            flex-direction: column;
-            z-index: 9;
-        }
-
-        .search-input {
-            width: 87%;
-            height: 50px;
-            font-size: 30px;
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-            outline: none;
-            background-color: #181818;
-            color: #fff;
-            padding-right: 5px;
-        }
-
-        .search-results {
-            margin-top: 10px;
-            width: 87%;
-            max-height: 600px;
-            overflow-y: auto;
-            background-color: #1e1e1e;
-            border-radius: 10px;
-            padding: 10px;
-            box-shadow: 0 0 10px #000;
-        }
-
-        .search-result-item {
-            padding: 10px;
-            color: #fff;
-            border-bottom: 1px solid #333;
-            cursor: pointer;
-        }
-
-        .search-result-item:hover {
-            background-color: #333;
-        }
-        
-        .video { 
-            display: flex; 
-            align-items: center; 
-            margin-top: 10px; 
-            cursor: pointer; 
-        }
-        .video img { 
-            margin-right: 10px;
-            width: 160px; 
-            height: 90px; 
-            object-fit: cover; 
-            border-radius: 10px;
-        }
-        .video-info { 
-            display: flex; 
-            flex-direction: column; 
-            color: white;
-        }
-        .video-title { 
-            font-weight: bold; 
-            margin-bottom: 5px; 
-            font-family: Arial, Helvetica, sans-serif;
-            color: white;
-        }
-        .video-creator { 
-            color: gray; 
-            font-size: 14px; 
-            font-family: Arial, Helvetica, sans-serif;
-            color: white;
-        }
-        .video:hover { 
-            text-decoration: underline; 
-        }
-        
-    </style>
 </head>
 <body>
-    <input class="url" id="url" placeholder="Youtube URL Here">
-    <input class="code" id="code" placeholder="Code Here">
+    <input class="url" id="url" placeholder="Youtube URL Here" autocomplete="off">
 
     <span class="icon" onclick="toggleSearch()">&#xe8b6;</span>
 
     <div class="search-box" id="searchBox">
-        <input type="text" class="search-input" placeholder="Search YouTube..." id="searchInput">
+        <input type="text" class="search-input" placeholder="Search YouTube..." id="searchInput" autocomplete="off">
         <div class="search-results" id="searchResults">
+
+            <div id="tabs">
+                <button onclick="showTab('videos')" id="videosTab" class="filter-selected">Videos</button>
+                <button onclick="showTab('channels')" id="channelsTab">Creators</button>
+            </div>  
+            
+            <div id="videoResults" class="tab-content"></div>
+            <div id="channelResults" class="tab-content" style="display:none;">
+                
+            </div>
+            
         </div>
     </div>
     
-    <button id="reloadButton">Load video</button>
-    <div class="videoWrapper">
-        <iframe id="videoFrame" src="https:///www.youtube.com/embed/harf=1&amp;feature=oembed&amp;wmode=opaque" frameborder="0" allowfullscreen=""></iframe>
+    <button id="reloadButton">Request Access</button>
+
+    <script>
+        if (localStorage.getItem('userIdentifier') === 'MyComputer') {
+            document.getElementById('reloadButton').innerText = 'Load video'
+        }
+    </script>
+    
+    <div class="sidebar collapsed" id="sidebar"> <!--Add collapsed tag when done editing-->
+        <span class="expand" onclick="toggleSidebar()">&#xe5df;</span>
+        <span id="checkVideosBtn" class="reload"><span id="arrowIcon">&#xe5d5;</span></span>
+        <h1>Following</h1>
+        <div class="channels" id="channels">
+           
+        </div>
+    </div></div>
+
     </div>
+
+
+    <div id="ambient-bg"></div>
+    <img id="thumbnail" crossorigin="anonymous" style="display:none;">
+    <iframe id="videoFrame" src="https:///www.youtube.com/embed/harf=1&amp;feature=oembed&amp;wmode=opaque" frameborder="0" allowfullscreen=""></iframe>
+    
+    <div class="ytInfo" id="ytInfo">
+        <img id="ytChannelPicture" src="https://yt3.googleusercontent.com/ytc/AIdro_ksXY2REjZ6gYKSgnWT5jC_zT9mX900vyFtVinR8KbHww=s176-c-k-c0x00ffffff-no-rj-mo">
+        <h1 id="ytTitle" class="truncate">Video Title</h1>
+        <p id="ytViews">1,234,567 views •</p>
+        <p id="ytDate">Jan 1, 2024</p>
+    </div>
+    
+    <div id="toastArea"></div>
+    
+    <p id="ytChannel">Channel Name</p>
 
     <img class="logo" src="https://yhstudios.github.io/image1.png">
 
     <div class="code-clicker"></div>
     <p class="code-viewer" id="codeViewer"></p>
 
-    <script>
-        async function updateCodeViewer() {
-            const codeViewer = document.getElementById("codeViewer");
-            const response = await fetch(GIST_URL + "?t=" + new Date().getTime());
-            const data = await response.json();
-            const code = JSON.parse(data.files["code.json"].content).code;
-            codeViewer.textContent = code;
-        }
-
-        document.querySelector(".code-clicker").addEventListener("click", async () => {
-            if (localStorage.getItem("userIdentifier") === "MyComputer") {
-            const codeViewer = document.getElementById("codeViewer");
-            await updateCodeViewer();
-            codeViewer.style.display = "flex";
-            setTimeout(() => {
-                codeViewer.style.display = "none";
-            }, 5000);
-            } else {
-            console.log("wrong comp");
-            }
-        });
-
-        document.addEventListener("keydown", async (event) => {
-            if (event.ctrlKey && event.key === " ") {
-            if (localStorage.getItem("userIdentifier") === "MyComputer") {
-                const codeViewer = document.getElementById("codeViewer");
-                await updateCodeViewer();
-                codeViewer.style.display = "flex";
-                setTimeout(() => {
-                codeViewer.style.display = "none";
-                }, 5000);
-            } else {
-                console.log("wrong comp");
-            }
-            event.preventDefault(); // Prevent default browser behavior for Ctrl+Space
-            }
-        });
-    </script>
-
-    <script>
-        const GIST_ID = "74fde4e913229c28fd532ed2fc8a759f";  
-        const access_1 = "ghp_VZ1vl6Jmj9t7R1Zb";
-        const access_2 = "qqnqXdRWmnj32d4G6hHd";
-        const ACCESS_TOKEN = access_1 + access_2;
-
-        const GIST_URL = `https://api.github.com/gists/${GIST_ID}`;
-        const input = document.getElementById('url');
-        const iframe = document.getElementById('videoFrame');
-        const button = document.getElementById('reloadButton');
-
-
-        function reloadVideo() {
-            const videoId = input.value.trim();
-            const extractedString = videoId.substring(32, 32 + 11);
-            iframe.src = `https://www.youtube.com/embed/${extractedString}`;
-        }
-
-
-        async function getCode() {
-            const response = await fetch(GIST_URL + "?t=" + new Date().getTime());
-            const data = await response.json();
-            return JSON.parse(data.files["code.json"].content).code;
-        }
-
-        async function updateCode(newCode) {
-            const updateData = {
-                files: {
-                    "code.json": {
-                        content: JSON.stringify({ code: newCode })
-                    }
-                }
-            };
-
-            await fetch(GIST_URL, {
-                method: "PATCH",
-                headers: {
-                    "Authorization": `token ${ACCESS_TOKEN}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(updateData)
-            });
-        }
-
-        async function handleReload() {
-            const inputCode = document.getElementById("code").value;
-            const currentCode = await getCode();
-
-            if (inputCode === currentCode || localStorage.getItem("userIdentifier") === "MyComputer") {
-                const newCode = Math.floor(1000 + Math.random() * 9000).toString();
-                await updateCode(newCode);
-                const reloadButton = document.getElementById("reloadButton");
-                reloadButton.textContent = "Loading...";
-                setTimeout(() => {
-                    reloadButton.textContent = "Load video";
-                }, 3000);
-                reloadVideo();
-            } else {
-                alert("Incorrect code!");
-            }
-        }
-
-        document.getElementById("reloadButton").addEventListener("click", handleReload);
-
-        document.addEventListener("keydown", async (event) => {
-            if (event.key === "Enter") {
-                const searchBox = document.getElementById("searchBox");
-                const isSearchVisible = getComputedStyle(searchBox).display !== "none";
-
-                if (isSearchVisible) {
-                    searchVideos();
-                } else {
-                    await handleReload();
-                }
-            }
-        });
-
-
-    </script>
-
-    <script>
-        const apiKeys = [
-        'AIzaSyDvk_OExE0RMk_3GxrxnLDOr9YOmGAm6ps',
-        'AIzaSyBWYqVipUlJVIvD8ba3vYHg7wv752FUP80',
-        'AIzaSyB72yKY02ug2o7bDVzw_Tv-KTcPvReM-sc'
-        ];
-        
-        let currentApiKeyIndex = 0; // Start with the first API key
-
-        async function searchVideos() {
-        const query = document.getElementById('searchInput').value;
-        let success = false; // Track whether the request was successful
-
-        // Loop until the request succeeds or we run out of keys
-        while (!success) {
-            const apiKey = apiKeys[currentApiKeyIndex]; // Use the current API key from the array
-
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(query)}&key=${apiKey}`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            // Check for quota exceeded error in the response
-            if (data.error && data.error.code === 403 && data.error.errors[0].reason === 'quotaExceeded') {
-            console.error('Quota exceeded for API key: ' + apiKey);
-            currentApiKeyIndex = (currentApiKeyIndex + 1) % apiKeys.length; // Switch to the next API key
-            continue; // Retry with the next key
-            }
-
-            // If no error, proceed with processing the results
-            success = true;
-
-            const resultsDiv = document.getElementById('searchResults');
-            resultsDiv.innerHTML = '';
-
-            data.items.forEach(item => {
-            const videoId = item.id.videoId;
-            const title = item.snippet.title;
-            const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-            const thumbnailUrl = item.snippet.thumbnails.high.url;
-            const creator = item.snippet.channelTitle;
-
-            const div = document.createElement('div');
-            div.className = 'video';
-            
-            // Create the thumbnail image
-            const img = document.createElement('img');
-            img.src = thumbnailUrl;
-            img.alt = title;
-
-            // Create the video info container
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'video-info';
-            
-            const videoTitle = document.createElement('div');
-            videoTitle.className = 'video-title';
-            videoTitle.textContent = title;
-
-            const videoCreator = document.createElement('div');
-            videoCreator.className = 'video-creator';
-            videoCreator.textContent = `By: ${creator}`;
-
-            infoDiv.appendChild(videoTitle);
-            infoDiv.appendChild(videoCreator);
-
-            div.appendChild(img);
-            div.appendChild(infoDiv);
-            
-            // Copy video URL to clipboard on click
-            div.onclick = () => {
-                const urlInput = document.getElementById("url");
-                const codeInput = document.getElementById("code");
-                const searchBox = document.getElementById("searchBox");
-
-                urlInput.value = videoUrl;
-                searchBox.style.display = "none";      // Close the search popup
-                if (localStorage.getItem("userIdentifier") === "MyComputer") {
-                    handleReload();
-                } else {
-                    codeInput.focus();
-                }
-            };
-
-            resultsDiv.appendChild(div);
-            });
-        }
-        }
-    </script>
-
-    <script>
-        function toggleSearch() {
-            const box = document.getElementById('searchBox');
-            const input = box.querySelector('.search-input');
-            const isVisible = box.style.display === 'flex';
-
-            box.style.display = isVisible ? 'none' : 'flex';
-            if (!isVisible) {
-                setTimeout(() => input.focus(), 100); // slight delay to ensure rendering
-            }
-        }
-
-        document.addEventListener('click', (event) => {
-            const searchBox = document.getElementById('searchBox');
-            const searchIcon = document.querySelector('.icon');
-            
-            if (!searchBox.contains(event.target) && !searchIcon.contains(event.target)) {
-                searchBox.style.display = 'none';
-            }
-        });
-    </script>
+    <script src="requests.js"></script>
 </body>
 </html>
