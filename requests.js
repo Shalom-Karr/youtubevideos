@@ -121,7 +121,7 @@ function showToast(link, key) {
     div.className = 'toast';
     div.innerHTML = `
         <strong>New request:</strong><span class="toast-close material-icons" style="cursor:pointer;">close</span>
-        <br> <a href='${link}'>${link}</a><br>
+        <a href='${link}'>this video</a><br>
         <button onclick="approve('${key}')">✅ Approve</button>
         <button onclick="deny('${key}')">❌ Deny</button>
     `;

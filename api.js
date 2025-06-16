@@ -145,8 +145,7 @@ async function searchVideos() {
             followBtn.innerHTML = `<span class="material-icons" style="vertical-align:middle;">person_add</span> Follow`;
 
             if (channels[title.replace(/\s/g, '')]) {
-                followBtn.textContent = 'Following';
-                followBtn.classList.add('disabled-button');
+                followBtn.innerHTML = '<span class="material-icons" style="vertical-align:middle;">person_remove</span> Unfollow';
                 
             }
 
@@ -154,8 +153,13 @@ async function searchVideos() {
                 e.stopPropagation();
                 
                 const titleWOspaces = title.replace(/\s/g, '');
-                followBtn.textContent = 'Following';
-                followBtn.classList.add('disabled-button');
+                followBtn.innerHTML = '<span class="material-icons" style="vertical-align:middle;">person_remove</span> Unfollow';
+                
+                if (followBtn.textContent.includes('Unfollow')) {
+                    followBtn.innerHTML = `<span class="material-icons" style="vertical-align:middle;">person_add</span> Follow`;
+                    removeYoutubeChannel(titleWOspaces);
+                    return;
+                }
                 addYoutubeChannel(titleWOspaces, title, channelId, thumbnailUrl);
             };
 
