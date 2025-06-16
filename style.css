@@ -304,7 +304,7 @@ iframe {
     margin-top: 10px;
     border-radius: 50px;
     float: right;
-    width: 128px;
+    width: 150px;
     margin-left: auto !important;
     margin-right: 10px;
 }
@@ -625,7 +625,7 @@ iframe {
     cursor: pointer;
     margin-left: 10px;
     font-size: 30px;
-    width: 47%;
+    padding: 10px 15px;
     margin-right: 2px;
     display: inline;
 }
