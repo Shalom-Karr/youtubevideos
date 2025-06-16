@@ -153,7 +153,6 @@ async function searchVideos() {
                 e.stopPropagation();
                 
                 const titleWOspaces = title.replace(/\s/g, '');
-                followBtn.innerHTML = '<span class="material-icons" style="vertical-align:middle;">person_remove</span> Unfollow';
                 
                 if (followBtn.textContent.includes('Unfollow')) {
                     followBtn.innerHTML = `<span class="material-icons" style="vertical-align:middle;">person_add</span> Follow`;
@@ -161,6 +160,7 @@ async function searchVideos() {
                     return;
                 }
                 addYoutubeChannel(titleWOspaces, title, channelId, thumbnailUrl);
+                followBtn.innerHTML = '<span class="material-icons" style="vertical-align:middle;">person_remove</span> Unfollow';
             };
 
             const followDiv = document.createElement('div');
