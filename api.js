@@ -1,10 +1,8 @@
 const apiKeys = [
-    'AIzaSyBWYqVipUlJVIvD8ba3vYHg7wv752FUP80',
     'AIzaSyDvk_OExE0RMk_3GxrxnLDOr9YOmGAm6ps',
-    'AIzaSyB72yKY02ug2o7bDVzw_Tv-KTcPvReM-sc',
-    'AIzaSyBj0UHINOCG4LLeO4z122xSrPFgHlqFnsw',
-    'AIzaSyC3UrAf4pqWVEacpYqXRymxa982bE2PPMU'
+    'AIzaSyBKhpc73Fzq1CqRCeOC6FIB8jOBFsol4Gg'
 ];
+
 
 let currentApiKeyIndex = 0; // Start with the first API key
 
