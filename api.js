@@ -1,8 +1,7 @@
 const apiKeys = [
     'AIzaSyDvk_OExE0RMk_3GxrxnLDOr9YOmGAm6ps',
-    'AIzaSyBKhpc73Fzq1CqRCeOC6FIB8jOBFsol4Gg'
+    'AIzaSyB_O2s3Z5hJ_X8gCbjQSLZ8IfuygNwshBk'
 ];
-
 
 let currentApiKeyIndex = 0; // Start with the first API key
 
@@ -98,14 +97,7 @@ async function searchVideos() {
             div.onclick = () => {
                 document.getElementById("url").value = videoUrl;
                 document.getElementById("searchBox").style.display = "none";
-                if (localStorage.getItem("userIdentifier") === "MyComputer") {
-                    reloadVideo();
-                } else {
-                    const codebox = document.getElementById("code")
-                    if (codebox) {
-                        code.focus();
-                    }
-                }
+                reloadVideo();
             };
 
             videoResultsDiv.appendChild(div);
@@ -157,8 +149,9 @@ async function searchVideos() {
                     removeYoutubeChannel(titleWOspaces);
                     return;
                 }
-                addYoutubeChannel(titleWOspaces, title, channelId, thumbnailUrl);
                 followBtn.innerHTML = '<span class="material-icons" style="vertical-align:middle;">person_remove</span> Unfollow';
+                
+                addYoutubeChannel(titleWOspaces, title, channelId, thumbnailUrl);
             };
 
             const followDiv = document.createElement('div');
