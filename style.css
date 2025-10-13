@@ -57,6 +57,35 @@ button:hover {
     background-color: #000;
 }
 
+.reloadButton {
+    border: 4px solid #414141;
+    background-color: #0f0f0f;
+    border-radius: 15px;
+    cursor: pointer;
+    padding: 10px 15px;
+    transition: all ease-in-out 0.2s;
+    font-size: 40px;
+}
+
+.reloadButton span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+}
+
+.reloadButton svg {
+    margin-right: 14px;
+    color: red;
+    margin-top: 5px;
+}
+
+.reloadButton:hover {
+    background-color: white;
+    color: red;
+}
+
+
 iframe {
     display: block;
     margin: 0 auto;
@@ -395,7 +424,28 @@ iframe {
     overflow: visible;
 }
 
-.channel:not(.dropdown-open):hover {
+@keyframes flash-green {
+  0%   { background-color: rgba(0, 255, 0, 0.5); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flash-red {
+  0%   { background-color: rgba(255, 0, 0, 0.5); }
+  100% { background-color: transparent; }
+}
+
+.channel.highlight-green {
+    animation: flash-green 1.5s ease forwards;
+    border-radius: 20px;   
+}
+
+.channel.highlight-red {
+    animation: flash-red 1.5s ease forwards;
+    border-radius: 20px;
+}
+
+
+.channel:hover {
     background-color: rgb(34, 34, 34);
     border-radius: 20px;
 }
@@ -475,7 +525,7 @@ iframe {
 }
 
 .dropdown-video:hover { 
-    background-color: rgb(34, 34, 34);
+    background-color: rgb(22,22,22);
 }
 
 .dropdown-thumbnail { 
@@ -538,6 +588,12 @@ iframe {
     100% {
         box-shadow: 0 0 0 0 rgba(102, 204, 255, 0);
     }
+}
+
+.noNewVideosMessage {
+    font-size: 14px;
+    justify-content: center;
+    text-align: center;
 }
 
 .ytInfo {
