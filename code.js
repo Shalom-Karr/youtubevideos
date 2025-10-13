@@ -12,23 +12,54 @@ const button = document.getElementById('reloadButton');
 function reloadVideo() {
     const videoId = input.value.trim();
     const extractedString = videoId.substring(32, 32 + 11);
+    
+    if (!videoId.includes("youtube.com/watch")) { return; }
+
     iframe.src = `https://www.youtube.com/embed/${extractedString}`;
     setAmbientColor(extractedString);
     updateVideoInfo(extractedString);
+
+    setTimeout(() => {
+
+        addVideoToHistory(videoId);
+    }, 5000);
 }
 
-
-async function getCode() {
+async function addVideoToHistory(videoUrl) {
+    // 1. get current gist
     const response = await fetch(GIST_URL + "?t=" + new Date().getTime());
     const data = await response.json();
-    return JSON.parse(data.files["code.json"].content).code;
-}
 
-async function updateCode(newCode) {
+    // 2. read history.json if exists, otherwise start fresh
+    let history = [];
+    if (data.files["history.json"]) {
+        try {
+            history = JSON.parse(data.files["history.json"].content);
+        } catch (e) {
+            console.warn("Failed to parse history.json, starting fresh.");
+        }
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 10000)); //basically wait(10)
+
+    const videoTitle = document.getElementById("ytTitle").innerText;
+
+    // 3. add new entry
+    const newEntry = {
+        url: videoUrl,
+        title: videoTitle,
+        watchedAt: new Date().toISOString()
+    };
+    history.push(newEntry);
+
+    // Optional: limit history size (e.g., 50 entries)
+    if (history.length > 50) history.shift();
+
+    // 4. upload new history
     const updateData = {
         files: {
-            "code.json": {
-                content: JSON.stringify({ code: newCode })
+            "history.json": {
+                content: JSON.stringify(history, null, 2)
             }
         }
     };
@@ -41,29 +72,11 @@ async function updateCode(newCode) {
         },
         body: JSON.stringify(updateData)
     });
+
+    console.log("Video added to history:", videoUrl);
 }
 
-async function handleReload() {
-    /*
-    const inputCode = document.getElementById("code").value;
-    const currentCode = await getCode();
-
-    if (inputCode === currentCode || localStorage.getItem("userIdentifier") === "MyComputer") {
-        const newCode = Math.floor(1000 + Math.random() * 9000).toString();
-        await updateCode(newCode);
-        const reloadButton = document.getElementById("reloadButton");
-        reloadButton.textContent = "Loading...";
-        setTimeout(() => {
-            reloadButton.textContent = "Load video";
-        }, 3000);
-        reloadVideo();
-    } else {
-        alert("Incorrect code!");
-    }
-        */
-}
-
-document.getElementById("reloadButton").addEventListener("click", handleReload);
+document.getElementById("reloadButton").addEventListener("click", reloadVideo);
 
 document.addEventListener("keydown", async (event) => {
 
@@ -74,56 +87,7 @@ document.addEventListener("keydown", async (event) => {
         if (isSearchVisible) {
             searchVideos();
         } else {
-            if (localStorage.getItem("userIdentifier") !== "MyComputer") {
-                await handleReload();
-            } else {
-                reloadVideo();
-            }
-
-            
-            
-
+            reloadVideo();
         }
-    }
-});
-
-
-
-/**Code for code */
-
-async function updateCodeViewer() {
-    const codeViewer = document.getElementById("codeViewer");
-    const response = await fetch(GIST_URL + "?t=" + new Date().getTime());
-    const data = await response.json();
-    const code = JSON.parse(data.files["code.json"].content).code;
-    codeViewer.textContent = code;
-}
-
-document.querySelector(".code-clicker").addEventListener("click", async () => {
-    if (localStorage.getItem("userIdentifier") === "MyComputer") {
-    const codeViewer = document.getElementById("codeViewer");
-    await updateCodeViewer();
-    codeViewer.style.display = "flex";
-    setTimeout(() => {
-        codeViewer.style.display = "none";
-    }, 5000);
-    } else {
-    console.log("wrong comp");
-    }
-});
-
-document.addEventListener("keydown", async (event) => {
-    if (event.ctrlKey && event.key === " ") {
-    if (localStorage.getItem("userIdentifier") === "MyComputer") {
-        const codeViewer = document.getElementById("codeViewer");
-        await updateCodeViewer();
-        codeViewer.style.display = "flex";
-        setTimeout(() => {
-        codeViewer.style.display = "none";
-        }, 5000);
-    } else {
-        console.log("wrong comp");
-    }
-    event.preventDefault(); // Prevent default browser behavior for Ctrl+Space
     }
 });
