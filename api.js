@@ -1,5 +1,4 @@
 const apiKeys = [
-    'AIzaSyDvk_OExE0RMk_3GxrxnLDOr9YOmGAm6ps',
     'AIzaSyB_O2s3Z5hJ_X8gCbjQSLZ8IfuygNwshBk'
 ];
 
@@ -243,3 +242,4 @@ async function updateVideoInfo(videoId) {
 }
 
 //printLocalStorageTags();
+
