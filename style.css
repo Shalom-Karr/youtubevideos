@@ -702,3 +702,18 @@ iframe {
     float: right;
 
 }
+
+.links {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 15px;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.links a {
+    text-decoration: underline;
+    color: white;
+}
+
