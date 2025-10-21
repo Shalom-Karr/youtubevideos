@@ -34,6 +34,8 @@ function toggleSidebar() {
 }
 
 function toggleChannel(channelName, arrowElement) {
+
+    console.log("function called!")
     const dropdown = document.getElementById(`dropdown-${channelName.replace(/\s/g, '')}`);
     const isVisible = dropdown.style.display === "block";
 
@@ -49,6 +51,7 @@ function toggleChannel(channelName, arrowElement) {
 
     // Rotate the arrow icon (Material icon: expand_more ↔ expand_less)
     arrowElement.innerHTML = isVisible ? "&#xe5df;" : "&#xe5c5;";
+    console.log("twisted arrow")
 
     if (!isVisible) {
         const parentChannel = dropdown.parentElement;

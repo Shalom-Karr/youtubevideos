@@ -62,24 +62,53 @@ function updateLastCheckTime() {
 async function checkAllChannels() {
     for (const [name, channelData] of Object.entries(channels)) {
         const channelId = channelData.id;
+        const channelDiv = document.querySelector(`.channel[data-channel="${name}"]`);
+
         try {
             const videos = await getLatestVideos(channelId, name);
-            if (!videos || videos.length === 0) continue;
 
-            const lastWatchedKey = `lastWatched-${name}`;
+            if (videos && videos.length > 0) {
+                const lastWatchedKey = `lastWatched-${name}`;
 
-            // Sort videos from oldest to newest (so dropdown adds in order)
-            const sortedVideos = videos.sort((a, b) => new Date(a.snippet.publishedAt) - new Date(b.snippet.publishedAt));
+                // sort videos oldest → newest
+                const sortedVideos = videos.sort(
+                    (a, b) => new Date(a.snippet.publishedAt) - new Date(b.snippet.publishedAt)
+                );
 
-            for (const video of sortedVideos) {
-                addVideoToDropdown(name, video);
+                for (const video of sortedVideos) {
+                    addVideoToDropdown(name, video);
+                }
+
+                // update last watched with newest video timestamp
+                const newestVideo = sortedVideos[sortedVideos.length - 1];
+                localStorage.setItem(lastWatchedKey, newestVideo.snippet.publishedAt);
             }
 
-            // Update last watched with the most recent video's time
-            const newestVideo = sortedVideos[sortedVideos.length - 1];
-            localStorage.setItem(lastWatchedKey, newestVideo.snippet.publishedAt);
+            // ✅ highlight green
+           if (channelDiv) {
+                channelDiv.classList.remove("highlight-red", "highlight-green");
+                void channelDiv.offsetWidth; // restart animation
+                channelDiv.classList.add("highlight-green"); // or "highlight-red"
+
+                // remove the highlight class once animation is done
+                channelDiv.addEventListener("animationend", () => {
+                    channelDiv.classList.remove("highlight-green", "highlight-red");
+                }, { once: true }); // "once" makes sure it only runs one time
+            }
         } catch (err) {
             console.error(`Error checking ${name}:`, err);
+
+            // ❌ highlight red
+            if (channelDiv) {
+                channelDiv.classList.remove("highlight-red", "highlight-green");
+                void channelDiv.offsetWidth; // restart animation
+                channelDiv.classList.add("highlight-red"); // or "highlight-red"
+
+                // remove the highlight class once animation is done
+                channelDiv.addEventListener("animationend", () => {
+                    channelDiv.classList.remove("highlight-green", "highlight-red");
+                }, { once: true }); // "once" makes sure it only runs one time
+            }
         }
     }
 }
@@ -122,6 +151,11 @@ function addVideoToDropdown(channelName, video) {
             publishedAt: publishedAt.toISOString()
         });
         localStorage.setItem(storageKey, JSON.stringify(storedVideos));
+    }
+
+    const noNewVideosMessage = container.querySelector("noNewVideosMessage")
+    if (noNewVideosMessage) {
+        container.removeChild(noNewVideosMessage)
     }
 }
 
@@ -208,7 +242,6 @@ function timeSince(date) {
 function restoreVideosFromStorage() {
     document.addEventListener('DOMContentLoaded', function() {
         for (const channelName of Object.keys(channels)) {
-            console.log("Restoring videos for channel:", channelName);
             const storageKey = `videos-${channelName}`;
             const storedVideos = JSON.parse(localStorage.getItem(storageKey)) || [];
             const container = document.getElementById(`dropdown-${channelName.replace(/\s/g, '')}`);
@@ -216,7 +249,6 @@ function restoreVideosFromStorage() {
             if (!container) continue;
             
             storedVideos.forEach(video => {
-                console.log("Restoring video:", video);
                 const timeAgo = timeSince(new Date(video.publishedAt));
                 const videoHTML = `
                     <div class="dropdown-video" onclick="handleVideoClick('${video.id}', '${channelName}')">
@@ -231,6 +263,11 @@ function restoreVideosFromStorage() {
                 container.style.display = "none";
                 notification.style.display = "block";
             });
+            if (notification.style.display !== "block") {
+                console.log("adding message")
+                const noVideosDiv = `<p class="noNewVideosMessage">There are no new videos.</p>`
+                container.insertAdjacentHTML('beforeend', noVideosDiv);
+            }
         }
     }); 
 }
@@ -248,7 +285,10 @@ function handleVideoClick(videoId, channelName) {
     // Remove video from dropdown
     const videoElement = container.querySelector(`.dropdown-video[onclick*="'${videoId}'"]`);
     if (videoElement) {
+        const arrowElement = videoElement.parentElement.parentElement.querySelector('.expandChannel')
         container.removeChild(videoElement);
+        toggleChannel(channelName, arrowElement);
+        
     } else {
         console.warn(`Video with ID ${videoId} not found in dropdown for channel ${channelName}`);
     
@@ -259,16 +299,16 @@ function handleVideoClick(videoId, channelName) {
 
     urlInput.value = `https://www.youtube.com/watch?v=${videoId}`;
     toggleSidebar();
-    if (localStorage.getItem("userIdentifier") === "MyComputer") {
-        reloadVideo();
-    } else {
-        codeInput.focus();
-    }
+    
+    reloadVideo();
 
     // If no more videos are left in the dropdown, hide it
     if (storedVideos.length === 0) {
         const notification = document.getElementById(`notif-${channelName.replace(/\s/g, '')}`);
         notification.style.display = "none";
+
+        const noVideosDiv = `<p class="noNewVideosMessage">There are no new videos.</p>`
+        container.insertAdjacentHTML('beforeend', noVideosDiv);
     }
 }
 
@@ -316,10 +356,12 @@ function removeYoutubeChannel(channelName) {
 }
 
 
-if (shouldCheckChannels()) {
-    checkAllChannels(); // You'll build this next
+//if (shouldCheckChannels()) {
+setTimeout(() => {
+    checkAllChannels();
     updateLastCheckTime();
-}
+}, 1000);
+//}
 
 document.getElementById('checkVideosBtn').addEventListener('click', async () => {
     console.log("Manual check triggered");
